@@ -29,8 +29,6 @@ You need OpenSCAD installed to use this design.
 You can get it here: http://openscad.org/
 OpenSCAD can also export to the STL format.
 
-The OpenScad files are human readable program code, so you can browse them to get an idea.
-
 funrap.scad is the main file that uses the others to construct the repstrap.
 
 
