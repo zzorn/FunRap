@@ -39,7 +39,7 @@ Feel free to copy OpenSCAD files for reuse elsewhere, there is for example a par
 
 == Licence ==
 
-The files are licenced under Creative Commons Share Alike 3.0, but feel free to ask if you need them under some other license.
+The files are licenced under Creative Commons Attribution-Share Alike 3.0., but feel free to ask if you need them under some other license.
 
 
 == Contact ==
