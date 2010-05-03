@@ -1,6 +1,9 @@
 == FunRap ==
 
-FunRap is a design for a repstrap made from wooden beams and metal rods.
+FunRap is a design for a RepStrap (home buildable 3D printer) made from wooden beams and metal rods.
+
+It is loosely based on the RepRap Mendel design (see http://www.reprap.org for details on the Mendel).
+
 
 == Goals ==
 
