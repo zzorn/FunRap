@@ -12,12 +12,13 @@
 <rod.scad>
 <stepper.scad>
 
-WoodenRepStrap(50*cm, 54*cm, 50*cm);
+WoodenRepStrap(50*cm, 50*cm, 50*cm);
 
 module WoodenRepStrap(xSize=50*cm, ySize=50*cm, zSize=50*cm) {
 
   baseBeam = Beam45x33;
   basePylonSupportOverhang = 5*cm;
+  topPylonSupportOverhang = 3*cm;
 
   midY = ySize/2;
   midX = xSize/2;
@@ -32,6 +33,8 @@ module WoodenRepStrap(xSize=50*cm, ySize=50*cm, zSize=50*cm) {
 
   //------------------------------------------------
   module Base(xs, ys, baseBeam, overhang) {
+    echo("Base");
+
     motorBoardWidth = Beam70x10[0];
 
     ySlideAreaPos = [baseBeam[0] + motorBoardWidth, 0, baseBeam[1]];
@@ -52,7 +55,7 @@ module WoodenRepStrap(xSize=50*cm, ySize=50*cm, zSize=50*cm) {
 
 
     module BaseRod(ySlideAreaSize, rodPos) {
-      rodSpacing = 2*cm;
+      rodSpacing = 0*cm;
       rodDiam = 8*mm;
 
       x = ySlideAreaSize[0]*rodPos;
@@ -63,23 +66,24 @@ module WoodenRepStrap(xSize=50*cm, ySize=50*cm, zSize=50*cm) {
   }
 
   //------------------------------------------------
-  module ZStructure(xSize, ySize, zSize, baseBeam) {
+  module ZStructure(xSize, ySize, zSize, baseBeam) { 
+    echo("Z Structure");
     baseSideZ= baseBeam[1]*2;
 
     midY = ySize/2;
     vertRodZ = baseBeam[1]*1.2;
     guideRodSideDistance = baseBeam[0]/3;
     pylonOvershoot = baseBeam[1] * 1.75;
-    pylonAngle = 30;
-    pylonLen = zSize *0.9;
 
     nutSpace = 15*mm;
 
     topZ = zSize * 0.88 - baseBeam[1];
-    topL = ySize *0.35;
+    topL = ySize *0.35 + 2*topPylonSupportOverhang;
+    pylonTopOffset = topL / 2 - topPylonSupportOverhang;
+    pylonHeight = topZ - 2*baseBeam[1];
 
-    ZStructureSide(baseBeam[0]/2, guideRodSideDistance);
-    ZStructureSide(xSize - baseBeam[0]/2, xSize-guideRodSideDistance);
+    ZStructureSide(baseBeam[0]/2, guideRodSideDistance, pylonHeight, pylonTopOffset);
+    ZStructureSide(xSize - baseBeam[0]/2, xSize-guideRodSideDistance, pylonHeight, pylonTopOffset);
 
     TopRod(topL/4);
     TopRod(-topL/4);
@@ -88,15 +92,15 @@ module WoodenRepStrap(xSize=50*cm, ySize=50*cm, zSize=50*cm) {
       threadedRod(xSize, pos=[0, midY+offs, topZ+baseBeam[1]/2], startOffset=nutSpace, endOffset=nutSpace);
     } 
 
-    module ZStructureSide(x, guideX) {
+    module ZStructureSide(x, guideX, height, topOffset) {
       VerticalGuideRod([guideX, midY, baseSideZ], topZ-baseSideZ);
-      Pylon([x, midY, baseBeam[1]*2], midY, pylonLen, pylonOvershoot, pylonAngle); 
+      Pylon([x, midY, baseBeam[1]*2], midY, topOffset, height, pylonOvershoot); 
 
       beam(topL, pos=[x, midY-topL/2, topZ], angle=[0,0,90], sideOffset=0.5);
 
-      module Pylon(basePos, r, h, over, a) {
-        threadedRod(h, pos=basePos-[0,r,0], angle=[0, 270+a,90], startOffset=over);
-        threadedRod(h, pos=basePos+[0,r,0], angle=[0, 270-a,90], startOffset=over);
+      module Pylon(pos, bottomR, topR, height, over) {
+        threadedRodBetweenPoints(from=pos+[0,bottomR,0], to=pos+[0,topR,height], startOffset=over, endOffset=over);
+        threadedRodBetweenPoints(from=pos+[0,-bottomR,0], to=pos+[0,-topR,height], startOffset=over, endOffset=over);
       }
 
 
@@ -113,6 +117,7 @@ module WoodenRepStrap(xSize=50*cm, ySize=50*cm, zSize=50*cm) {
 
   //------------------------------------------------
   module MotorBoard(pos, ys) {
+    echo("Motorboard");
     motorbeam=Beam70x10;
     beam(ys, motorbeam, pos, angle=[0,0,90], sideOffset=1);
 
