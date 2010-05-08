@@ -7,14 +7,21 @@
 
 <materials.scad>
 <units.scad>
+<utilities.scad>
+
 
 // Example, uncomment to view
 /*
 {
-  beam(1*m, Beam70x10);
-  beam(1*m, Beam45x33, [0, 1*m, 0], sideOffset=0.5, verticalOffset=0.5, material=Oak, endCut=Beam33x33[0]);
-  beam(1*m, Beam33x33, [1*m, 0, 0], [0,0,90], startCut=Beam70x10[0], material=Birch);
-  beam(1*m, Beam45x45, [0, 0, 0], [0,0,90], material=Pine);
+  p1 = [0,0,0]*m;
+  p2 = [1,0,0]*m;
+  p3 = [1,1,0.25]*m;
+  p4 = [0,1,0]*m;
+
+  beam(p1, p2, Beam45x33, align=[CENTER, TOP], material=Birch);
+  beam(p2, p3, Beam33x33, align=[RIGHT, TOP], material=Oak);
+  beam(p3, p4, Beam70x10, material=Birch);
+  beam(p4, p1, Beam45x45, align=[LEFT, TOP], material=Pine, endCaps=[ExtendedCap, CutCap]);
 }
 */
 
@@ -24,25 +31,15 @@ Beam45x33 = [45*mm, 33*mm];
 Beam45x45 = [45*mm, 45*mm];
 Beam70x10 = [70*mm, 10*mm];
 
-module beam(length, size=Beam45x33, pos=[0,0,0], angle=[0,0,0], material=Pine, sideOffset=0, verticalOffset=0, startCut=0, endCut=0) {
+function beamWidth(beamType) = beamType[0];
+function beamHeigth(beamType) = beamType[1];
 
-  l = length - startCut - endCut;
+module beam(from=[0,0,0], to=[1*m, 0,0], type=Beam45x33, material=Pine, align=[CENTER, TOP], endOffsets=[0,0], endCaps=[FlatCap, FlatCap]) {
 
-  offset = [startCut, -size[0] * sideOffset, -size[1] * verticalOffset];
-
-  if (l > 0) {
-    echo("Wooden beam ", size[0], "mm x ", size[1], "mm, length ",l,"mm");
-
-    color(material) {
-      translate(pos) {
-        rotate(angle) {
-          translate(offset) 
-             cube([l, size[0], size[1]]);
-        }
-      }
-    }
-  }
+  fromTo(from=from, to=to, size=[beamWidth(type), beamHeigth(type)], align=align, material=material, name="Wooden beam", endExtras=endOffsets, endCaps=endCaps) cube();
 }
+
+
 
 
 
