@@ -36,7 +36,7 @@ module threadedRod(length=1*m, pos=[0,0,0], angle=[0,0,0], diameter=DefaultRodDi
 }
 
 
-module rodBetweenPoints(from=[0,0,0], to=[0,0,0], diameter=DefaultRodDiameter, material=Steel, startOffset=0, endOffset=0) {
+module rodBetweenPoints(from=[0,0,0], to=[0,0,0], diameter=DefaultRodDiameter, material=Stainless, startOffset=0, endOffset=0) {
 
   l = distance(from, to);
   angle = angleBetweenTwoPoints(from, to);
@@ -44,7 +44,7 @@ module rodBetweenPoints(from=[0,0,0], to=[0,0,0], diameter=DefaultRodDiameter, m
   rod(l, from, angle, diameter, material, startOffset, endOffset);
 }
 
-module rod(length=1*m, pos=[0,0,0], angle=[0,0,0], diameter=DefaultRodDiameter, material=Steel, startOffset=0, endOffset=0) {
+module rod(length=1*m, pos=[0,0,0], angle=[0,0,0], diameter=DefaultRodDiameter, material=Stainless, startOffset=0, endOffset=0) {
   l = length + startOffset + endOffset;
 
   echo("Plain rod, ", diameter, "mm diameter, ", l, "mm long.");
