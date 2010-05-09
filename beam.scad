@@ -34,9 +34,9 @@ Beam70x10 = [70*mm, 10*mm];
 function beamWidth(beamType) = beamType[0];
 function beamHeigth(beamType) = beamType[1];
 
-module beam(from=[0,0,0], to=[1*m, 0,0], type=Beam45x33, material=Pine, align=[CENTER, TOP], endOffsets=[0,0], endCaps=[FlatCap, FlatCap]) {
+module beam(from=[0,0,0], to=[1*m, 0,0], type=Beam45x33, material=Pine, align=[CENTER, TOP], endOffsets=[0,0], endCaps=[FlatCap, FlatCap], rotation=0) {
 
-  fromTo(from=from, to=to, size=[beamWidth(type), beamHeigth(type)], align=align, material=material, name="Wooden beam", endExtras=endOffsets, endCaps=endCaps) cube();
+  fromTo(from=from, to=to, size=[beamWidth(type), beamHeigth(type)], align=align, material=material, name="Wooden beam", endExtras=endOffsets, endCaps=endCaps, rotation=[rotation, 0,0]) cube();
 }
 
 

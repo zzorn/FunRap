@@ -11,14 +11,17 @@
 <board.scad>
 <rod.scad>
 <stepper.scad>
+<y_structure.scad>
+<z_structure.scad>
 
 // Uncomment to test:
- FunRap();
+// FunRap();
 
 module FunRap(xSize=50*cm, ySize=52*cm, zSize=42*cm, frameBeam=Beam45x33, motorBeam=[70,10], motorType=Nema23, topSupportSpread=-0.15) {
 
-  yCarriagePosition = $t; // Animated, set to 0..1
-  zCarriagePosition = $t; // Animated, set to 0..1
+  time = $t;  // Animated, set to 0..1
+  yCarriagePosition = time;
+  zCarriagePosition = time;
 
   baseSupportExtent = ySize * 0.075;
   topSupportExtent = xSize * topSupportSpread;
@@ -130,105 +133,6 @@ module Ridge(topCorners, frameBeam, topSupportExtent, baseCorners, baseSupportEx
   threadedRod(b3, t3, endOffsets=fasteningSpace);
   threadedRod(b4, t4, endOffsets=fasteningSpace);
 }
-
-
-module YCarriageFrame(yCarriageSpace, yRodOffsets, yCarriagePosition, frameBeam, rodDiameter) {
-  part("Y Carriage Frame");
-
-  rodOffset = 10*mm;
-  rodMarginFromEdges=10*mm;
-
-  margin = 1*cm;
-
-  buildAreaBorder = 3*cm;
-
-  slideUnderstructureSize = 15*cm;
-
-  r1s = [yRodOffsets[0], rodMarginFromEdges, 0];
-  r1e = [yRodOffsets[0], yCarriageSpace[1]-rodMarginFromEdges, 0];
-  r2s = [yCarriageSpace[0] - yRodOffsets[1], rodMarginFromEdges, 0];
-  r2e = [yCarriageSpace[0] - yRodOffsets[1], yCarriageSpace[1]-rodMarginFromEdges, 0];
-
-  rod(r1s, r1e, diameter=rodDiameter, align=[CENTER, TOP]);
-  rod(r2s, r2e, diameter=rodDiameter, align=[CENTER, TOP]);
-
-
-  carriageMovement = [beamWidth(frameBeam) + margin + slideUnderstructureSize/2, 
-   yCarriageSpace[1] - beamWidth(frameBeam) - margin - slideUnderstructureSize/2];
-
-  travel = carriageMovement[1]-carriageMovement[0];
-
-  echo(str("  --- Build area along Y axis: ", travel, " mm ---"));
-
-  carriageSize = [yCarriageSpace[0]- 2  *margin, travel + 2*buildAreaBorder];
-
-  carriageZ = rodDiameter + rodOffset;
-  carriageMidX = yCarriageSpace[0] / 2;
-  carriageMidY = yCarriagePosition * travel + carriageMovement[0];
-  carriagePos = [carriageMidX-carriageSize[0]/2, carriageMidY-carriageSize[1]/2, carriageZ];
-
-  translate(carriagePos) YCarriageSlide(carriageSize);
-
-  module YCarriageSlide(surfaceSize) {
-    part("Y Carriage Slide");
-    board(size=surfaceSize);  
-  }
-}
-
-
-
-
-
-module ZCarriageFrame(xSize, zSize, zCarriagePosition, frameBeam, rodDiameter) {
-  part("Z Carriage Frame");
-
-  rodDistanceFromEdge=10*mm + rodDiameter/2;
-  movementMargin = 10*mm;
-  slideHeight = 10*cm;
-  
-  threadedRodMargins = 10*mm;
-
-  // Guide rods
-  rs = beamHeigth(frameBeam) * 4/3;
-  re = zSize - beamHeigth(frameBeam) * 1/3;
-  r1s = [rodDistanceFromEdge,0,rs];
-  r1e = [rodDistanceFromEdge,0,re];
-  r2s = [xSize-rodDistanceFromEdge,0,rs];
-  r2e = [xSize-rodDistanceFromEdge,0,re];
-  rod(r1s, r1e, diameter=rodDiameter);
-  rod(r2s, r2e, diameter=rodDiameter);
-
-  // Threaded rods that lift the slide
-  trs = threadedRodMargins;
-  tre = zSize - beamHeigth(frameBeam) - threadedRodMargins;
-  tr1s = [beamWidth(frameBeam) - rodDistanceFromEdge,0,trs];
-  tr1e = [beamWidth(frameBeam) - rodDistanceFromEdge,0,tre];
-  tr2s = [xSize-beamWidth(frameBeam) + rodDistanceFromEdge,0,trs];
-  tr2e = [xSize-beamWidth(frameBeam) + rodDistanceFromEdge,0,tre];
-  threadedRod(tr1s, tr1e, diameter=rodDiameter);
-  threadedRod(tr2s, tr2e, diameter=rodDiameter);
-
-
-
-  carriageMovement = [2*beamHeigth(frameBeam) + movementMargin, 
-              zSize - beamHeigth(frameBeam) - movementMargin - slideHeight];
-
-  travel = carriageMovement[1]-carriageMovement[0];
-
-  echo(str("  --- Build area along Z axis: ", travel, " mm ---"));
-
-  carriagePos = [0,0,zCarriagePosition * travel + carriageMovement[0]];
-
-  translate(carriagePos) ZCarriageSlide(xSize);
-
-  module ZCarriageSlide(carriageLength) {
-    part("Z Carriage Slide");
-    %beam([0,0,0], [carriageLength, 0,0], align=[CENTER, TOP]);
-  }
-}
-
-
-
 
 
 
