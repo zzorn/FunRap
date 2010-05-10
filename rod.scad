@@ -25,7 +25,7 @@ module threadedRod(length=1*m, pos=[0,0,0], angle=[0,0,0], diameter=DefaultRodDi
   _rodCylinder(l, pos, angle, diameter, material, startOffset, endOffset);
 }
 
-module rod(length=1*m, pos=[0,0,0], angle=[0,0,0], diameter=DefaultRodDiameter, material=Steel, startOffset=0, endOffset=0) {
+module rod(length=1*m, pos=[0,0,0], angle=[0,0,0], diameter=DefaultRodDiameter, material=Stainless, startOffset=0, endOffset=0) {
   l = length + startOffset + endOffset;
 
   echo("Plain rod, ", diameter, "mm diameter, ", l, "mm long.");

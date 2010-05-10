@@ -14,7 +14,7 @@
 
 WoodenRepStrap(50*cm, 54*cm, 50*cm);
 
-module WoodenRepStrap(xSize=50*cm, ySize=50*cm, zSize=50*cm) {
+module WoodenRepStrap(xSize=30*cm, ySize=50*cm, zSize=50*cm) {
 
   baseBeam = Beam45x33;
   basePylonSupportOverhang = 5*cm;
