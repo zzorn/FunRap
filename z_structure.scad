@@ -22,8 +22,8 @@
 module ZCarriageFrame(xSize, zSize, zCarriagePosition, frameBeam, rodDiameter) {
   part("Z Carriage Frame");
 
-  rodDistanceFromEdge=10*mm + rodDiameter/2;
-  movementMargin = 10*mm;
+  rodDistanceFromEdge=8*mm + rodDiameter/2;
+  movementMargin = 20*mm;
   slideHeight = 10*cm;
   
   threadedRodMargins = 10*mm;
@@ -59,7 +59,7 @@ module ZCarriageFrame(xSize, zSize, zCarriagePosition, frameBeam, rodDiameter) {
 
   carriagePos = [0,0,zCarriagePosition * travel + carriageMovement[0]];
 
-  translate(carriagePos) XCarriageFrame(xSize, frameBeam);
+  translate(carriagePos) XCarriageFrame(xSize, frameBeam, rodDistanceFromEdge);
 }
 
 
