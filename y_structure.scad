@@ -9,15 +9,16 @@
 <materials.scad>
 <beam.scad>
 <board.scad>
+<bearing.scad>
 <rod.scad>
 <stepper.scad>
 
 // Uncomment to test:
-// YCarriageFrame();
+ YCarriageFrame();
 
 
 
-module YCarriageFrame(yCarriageSpace, yRodOffsets, yCarriagePosition, frameBeam, rodDiameter) {
+module YCarriageFrame(yCarriageSpace=[50*cm,50*cm], yRodOffsets=[90*mm,90*mm], yCarriagePosition=0, frameBeam=Beam45x33, rodDiameter=8*mm, bearingModel=SkateBearing) {
   part("Y Carriage Frame");
 
   rodOffset = 10*mm;
@@ -29,10 +30,13 @@ module YCarriageFrame(yCarriageSpace, yRodOffsets, yCarriagePosition, frameBeam,
 
   slideUnderstructureSize = 15*cm;
 
-  r1s = [yRodOffsets[0], rodMarginFromEdges, 0];
-  r1e = [yRodOffsets[0], yCarriageSpace[1]-rodMarginFromEdges, 0];
-  r2s = [yCarriageSpace[0] - yRodOffsets[1], rodMarginFromEdges, 0];
-  r2e = [yCarriageSpace[0] - yRodOffsets[1], yCarriageSpace[1]-rodMarginFromEdges, 0];
+  rod1X = yRodOffsets[0];
+  rod2X = yCarriageSpace[0] - yRodOffsets[1];
+
+  r1s = [rod1X, rodMarginFromEdges, 0];
+  r1e = [rod1X, yCarriageSpace[1]-rodMarginFromEdges, 0];
+  r2s = [rod2X, rodMarginFromEdges, 0];
+  r2e = [rod2X, yCarriageSpace[1]-rodMarginFromEdges, 0];
 
   rod(r1s, r1e, diameter=rodDiameter, align=[CENTER, TOP]);
   rod(r2s, r2e, diameter=rodDiameter, align=[CENTER, TOP]);
@@ -47,18 +51,44 @@ module YCarriageFrame(yCarriageSpace, yRodOffsets, yCarriagePosition, frameBeam,
 
   carriageSize = [yCarriageSpace[0]- 2  *margin, travel + 2*buildAreaBorder];
 
-  carriageZ = rodDiameter + rodOffset;
+  carriageZ = rodDiameter + bearingOuterDiameter(bearingModel) + 4*mm;
   carriageMidX = yCarriageSpace[0] / 2;
   carriageMidY = yCarriagePosition * travel + carriageMovement[0];
-  carriagePos = [carriageMidX-carriageSize[0]/2, carriageMidY-carriageSize[1]/2, carriageZ];
+  carriageXOffs = carriageMidX-carriageSize[0]/2;
+  carriagePos = [carriageXOffs, carriageMidY-carriageSize[1]/2, carriageZ];
 
-  translate(carriagePos) YCarriageSlide(carriageSize);
+  translate(carriagePos) YCarriageSlide(carriageSize, slideUnderstructureSize, frameBeam,  rod1X-carriageXOffs, rod2X-carriageXOffs, rodMarginFromEdges, rodDiameter,bearingModel);
 }
 
 
-module YCarriageSlide(surfaceSize) {
+module YCarriageSlide(surfaceSize, slideUnderstructureSize, frameBeam,  rod1X, rod2X, rodMarginFromEdges, rodDiameter,bearingModel) {
   part("Y Carriage Slide");
+
   board(size=surfaceSize);  
+
+  bw= beamWidth(frameBeam);
+  bh= beamHeigth(frameBeam);
+  midY = surfaceSize[1] /2;
+
+  bearD = bearingOuterDiameter(bearingModel);
+  
+  bearingX = rod1X - bearingWidth(bearingModel)/2;
+  bearingZ = -bearD/2 - 4*mm;
+  startX = rod1X + bearingWidth(bearingModel)/2 + 5*mm;
+  endX = rod2X + 2*rodMarginFromEdges + rodDiameter / 2;
+
+  y1 = midY - slideUnderstructureSize/2;
+  y2 = midY + slideUnderstructureSize/2;
+
+  b1s = [startX, y1, 0];
+  b1e = [endX, y1, 0];
+  b2s = [startX, y2, 0];
+  b2e = [endX, y2, 0];
+
+  beam(b1s, b1e, model=frameBeam, align=[LEFT, TOP], rotation=270);
+  beam(b2e, b2s, model=frameBeam, align=[LEFT, TOP], rotation=270);
+  bearing(model=bearingModel,pos=[bearingX, y1+bh/2, bearingZ], angle=[0,90,0]);
+  bearing(model=bearingModel,pos=[bearingX, y2-bh/2, bearingZ], angle=[0,90,0]);
 }
 
 
