@@ -14,14 +14,10 @@
 <structure.scad>
 
 
-<<<<<<< HEAD
-module WoodenRepStrap(xSize=30*cm, ySize=50*cm, zSize=50*cm) {
-=======
 // Size
 machineWidth = 50*cm;
 machineDepth = 50*cm;
 machineHeight = 42*cm;
->>>>>>> d904d636c0ae648797728cfef94eac4596e7dfc9
 
 // Size of wooden beams used
 frameBeam = [45*mm, 33*mm];
@@ -34,7 +30,7 @@ stepperMotorModel = Nema23;
 // (How far out the ends of the top support should be, 
 //  expressed in fraction of machine width.
 //  Use a negative value to put the top ends of the supports inside the machine).
-topSupportSpread = -0.15;
+topSupportSpread = -0.3;
 
 
 // Create the model

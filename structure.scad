@@ -17,13 +17,13 @@
 // Uncomment to test:
 // FunRap();
 
-module FunRap(xSize=50*cm, ySize=52*cm, zSize=42*cm, frameBeam=Beam45x33, motorBeam=[70,10], motorType=Nema23, topSupportSpread=-0.15) {
+module FunRap(xSize=50*cm, ySize=52*cm, zSize=42*cm, frameBeam=Beam45x33, motorBeam=[70,10], motorType=Nema23, topSupportSpread=-0.3) {
 
   time = $t;  // Animated, set to 0..1
   yCarriagePosition = time;
   zCarriagePosition = time;
 
-  baseSupportExtent = ySize * 0.075;
+  baseSupportExtent = 0; // ySize * 0.075;
   topSupportExtent = xSize * topSupportSpread;
   supportRodClearing = 3*cm;
   supportRodFasteningClearance = 2*cm;
@@ -67,7 +67,7 @@ module FunRap(xSize=50*cm, ySize=52*cm, zSize=42*cm, frameBeam=Beam45x33, motorB
     translate(zCarriageOffset) ZCarriageFrame(xSize, zSize, zCarriagePosition, frameBeam, rodDiameter);
 
     // Top
-    Ridge(topCorners, frameBeam, topSupportExtent, baseCorners, baseSupportExtent, supportRodClearing, supportRodFasteningClearance);
+    Ridge(topCorners, frameBeam, topSupportExtent, baseCorners, baseSupportExtent, supportRodClearing, supportRodFasteningClearance,rodDiameter);
   }
 }
 
@@ -96,25 +96,26 @@ module MotorBoard(length, beamType, motorType, motorPositions) {
 }
 
 
-module Ridge(topCorners, frameBeam, topSupportExtent, baseCorners, baseSupportExtent, supportRodClearing, supportRodFasteningClearance) {
+module Ridge(topCorners, frameBeam, topSupportExtent, baseCorners, baseSupportExtent, supportRodClearing, supportRodFasteningClearance, rodDiameter) {
   part("Ridge");
 
   bw = beamWidth(frameBeam);
   bh = beamHeigth(frameBeam);
 
-  extraLen = length2([bw, bh]) / 2;
-
   tb1 = topCorners[0] - [max(0,topSupportExtent), 0, 0];
   tb2 = topCorners[1] + [max(0,topSupportExtent), 0, 0];
   beam(tb1, tb2, frameBeam, align=[CENTER, BOTTOM]);
 
+  rodOffs = rodDiameter;
+
   baseWidthOffs = [bw/2, 0, 0];
-  baseHeightOffs = [0, 0, 1.5*bh];
-  baseSupportOffs = [0, baseSupportExtent - supportRodClearing, 0];
+  baseHeightOffs = [0, 0, bh*2 + rodOffs];
+  baseSupportOffs = [0, baseSupportExtent + rodOffs, 0];
+
   topSupportOffs = [topSupportExtent, 0, 0];
   topRodOffs = [supportRodClearing, 0, 0];
-  topWidthOffs = [0, 0, 0];
-  topHeigthOffs = [0, 0, -bh/2];
+  topWidthOffs = [0, -bw/2 -rodOffs, 0];
+  topHeigthOffs = [0, 0, rodOffs];
 
   b1 = baseCorners[0] - baseSupportOffs + baseWidthOffs + baseHeightOffs;
   b2 = baseCorners[1] - baseSupportOffs - baseWidthOffs + baseHeightOffs;
@@ -123,11 +124,11 @@ module Ridge(topCorners, frameBeam, topSupportExtent, baseCorners, baseSupportEx
 
   t1 = topCorners[0] - topSupportOffs + topRodOffs + topWidthOffs + topHeigthOffs;
   t2 = topCorners[1] + topSupportOffs - topRodOffs  + topWidthOffs + topHeigthOffs;
-  t3 = topCorners[1] + topSupportOffs - 2*topRodOffs  - topWidthOffs + topHeigthOffs;
-  t4 = topCorners[0] - topSupportOffs + 2*topRodOffs  - topWidthOffs + topHeigthOffs;
+  t3 = topCorners[1] + topSupportOffs - topRodOffs  - topWidthOffs + topHeigthOffs;
+  t4 = topCorners[0] - topSupportOffs + topRodOffs  - topWidthOffs + topHeigthOffs;
 
-  fasteningSpace = [supportRodFasteningClearance + extraLen, 
-                    supportRodFasteningClearance + extraLen];
+  fasteningSpace = [supportRodFasteningClearance , 
+                    supportRodFasteningClearance ];
   threadedRod(b1, t1, endOffsets=fasteningSpace);
   threadedRod(b2, t2, endOffsets=fasteningSpace);
   threadedRod(b3, t3, endOffsets=fasteningSpace);
