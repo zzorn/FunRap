@@ -14,7 +14,7 @@
 <stepper.scad>
 
 // Uncomment to test:
- YCarriageFrame();
+// YCarriageFrame();
 
 
 
@@ -51,17 +51,18 @@ module YCarriageFrame(yCarriageSpace=[50*cm,50*cm], yRodOffsets=[90*mm,90*mm], y
 
   carriageSize = [yCarriageSpace[0]- 2  *margin, travel + 2*buildAreaBorder];
 
-  carriageZ = rodDiameter + bearingOuterDiameter(bearingModel) + 4*mm;
+  bearingCleaing = 2*mm;
+  carriageZ = rodDiameter + bearingOuterDiameter(bearingModel) + bearingCleaing;
   carriageMidX = yCarriageSpace[0] / 2;
   carriageMidY = yCarriagePosition * travel + carriageMovement[0];
   carriageXOffs = carriageMidX-carriageSize[0]/2;
   carriagePos = [carriageXOffs, carriageMidY-carriageSize[1]/2, carriageZ];
 
-  translate(carriagePos) YCarriageSlide(carriageSize, slideUnderstructureSize, frameBeam,  rod1X-carriageXOffs, rod2X-carriageXOffs, rodMarginFromEdges, rodDiameter,bearingModel);
+  translate(carriagePos) YCarriageSlide(carriageSize, slideUnderstructureSize, frameBeam,  rod1X-carriageXOffs, rod2X-carriageXOffs, rodMarginFromEdges, rodDiameter,bearingModel, bearingCleaing);
 }
 
 
-module YCarriageSlide(surfaceSize, slideUnderstructureSize, frameBeam,  rod1X, rod2X, rodMarginFromEdges, rodDiameter,bearingModel) {
+module YCarriageSlide(surfaceSize, slideUnderstructureSize, frameBeam,  rod1X, rod2X, rodMarginFromEdges, rodDiameter,bearingModel, bearingCleaing) {
   part("Y Carriage Slide");
 
   board(size=surfaceSize);  
@@ -73,7 +74,7 @@ module YCarriageSlide(surfaceSize, slideUnderstructureSize, frameBeam,  rod1X, r
   bearD = bearingOuterDiameter(bearingModel);
   
   bearingX = rod1X - bearingWidth(bearingModel)/2;
-  bearingZ = -bearD/2 - 4*mm;
+  bearingZ = -bearD/2 - bearingCleaing;
   startX = rod1X + bearingWidth(bearingModel)/2 + 5*mm;
   endX = rod2X + 2*rodMarginFromEdges + rodDiameter / 2;
 
