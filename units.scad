@@ -12,10 +12,13 @@ dm = 100 * mm;
 m = 1000 * mm;
 inch = 25.4 * mm;
 
-M3 = 3*mm/2;
-M4 = 4*mm/2;
-M5 = 5*mm/2;
-M6 = 6*mm/2;
-M8 = 8*mm/2;
+M3 = 3*mm;
+M4 = 4*mm;
+M5 = 5*mm;
+M6 = 6*mm;
+M8 = 8*mm;
 
+
+// When a small distance is needed to overlap shapes for boolean cutting, etc.
+epsilon = 1*mm;
 

@@ -186,13 +186,15 @@ Nema34 = [
 
 
 
+function motorWidth(model=Nema23) = lookup(NemaSideSize, model);
+function motorLength(model=Nema23, size=NemaMedium) = lookup(size, model);
 
 
-module motor(model=Nema23, size=NemaMedium, dualAxis=false, pos = [0,0,0], orientation = [0,0,0]) {
+module motor(model=Nema23, size=NemaMedium, dualAxis=false, pos=[0,0,0], orientation = [0,0,0]) {
 
   length = lookup(size, model);
 
-  echo("Motor, Nema ",lookup(NemaModel, model),", length= ",length,"mm, dual axis=",dualAxis);
+  echo(str("  Motor: Nema",lookup(NemaModel, model),", length= ",length,"mm, dual axis=",dualAxis));
 
   stepperBlack    = BlackPaint;
   stepperAluminum = Aluminum;

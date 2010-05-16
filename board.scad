@@ -10,20 +10,20 @@
 
 // Example, uncomment to view
 /*
-board(50*cm, 50*cm);
-board(50*cm, 20*cm, angle=[90,0,0]);
+board([50*cm, 50*cm]);
+board([50*cm, 20*cm], angle=[90,0,0]);
 */
 
 boardThickness = 8*mm;
 
-module board(width, height, pos=[0,0,0], angle=[0,0,0], thickness=boardThickness, material=FiberBoard) {
+module board(size, pos=[0,0,0], angle=[0,0,0], thickness=boardThickness, material=FiberBoard) {
   
-  echo("Board ", size[0], "mm x ", size[1], "mm, thickness ",thickness,"mm");
+  echo(str("  Board ", size[0], "mm x ", size[1], "mm, thickness ",thickness,"mm"));
 
   color(material) {
     translate(pos)
       rotate(angle)
-        cube(size=[width, height, thickness]);
+        cube(size=[size[0], size[1], thickness]);
   }
 }
 

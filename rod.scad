@@ -7,40 +7,39 @@
 
 <units.scad>
 <materials.scad>
+<utilities.scad>
 
 // Example, uncomment to view
 /*
-rod();
-threadedRod(50*cm, diameter= 12*mm, angle=[0,0,90], startOffset=5*cm);
+p1=[0,0,0]*dm;
+p2=[1,0,0]*dm;
+p3=[1,1,0.25]*dm;
+p4=[0,1,0]*dm;
+
+rod(p1, p2, endCaps=[FlatCap, ExtendedCap]);
+threadedRod(p2, p3, endCaps=[CutCap, FlatCap]);
+rod(p3, p4, material=Aluminum, endOffsets=[-2*cm, 5*cm]);
+rod(p1, p4, align=[CENTER, TOP]);
 */
 
 // Default size
 DefaultRodDiameter = 8*mm;
 
-module threadedRod(length=1*m, pos=[0,0,0], angle=[0,0,0], diameter=DefaultRodDiameter, material=Steel, startOffset=0, endOffset=0) {
-  l = length + startOffset + endOffset;
+module rod(from=[0,0,0], to=[1*m, 0,0], diameter=DefaultRodDiameter, material=Stainless, align=[CENTER, CENTER], endOffsets=[0,0], endCaps=[FlatCap, FlatCap]) {
 
-  echo("Threaded rod, ", diameter, "mm diameter, ", l, "mm long.");
-
-  _rodCylinder(l, pos, angle, diameter, material, startOffset, endOffset);
+  fromTo(from=from, to=to, size=[diameter,diameter], align=[-0.5, 0.5]+align, material=material, name="Rod", endExtras=endOffsets, endCaps=endCaps) {
+    rotate([0,90,0]) {
+      cylinder(r=0.5, h=1, $fs=diameter/100 );
+    }
+  }
 }
 
-module rod(length=1*m, pos=[0,0,0], angle=[0,0,0], diameter=DefaultRodDiameter, material=Stainless, startOffset=0, endOffset=0) {
-  l = length + startOffset + endOffset;
+module threadedRod(from=[0,0,0], to=[1*m, 0,0], diameter=DefaultRodDiameter, material=Steel, align=[CENTER, CENTER], endOffsets=[0,0], endCaps=[FlatCap, FlatCap]) {
 
-  echo("Plain rod, ", diameter, "mm diameter, ", l, "mm long.");
-
-  _rodCylinder(l, pos, angle, diameter, material, startOffset, endOffset);
-}
-
-// Helper
-module _rodCylinder(length, pos, angle, diameter, material, startOffset, endOffset) {
-  color(material){
-    translate(pos)
-      rotate(angle) 
-        rotate([0,90,0]) 
-          translate([0, 0, -startOffset])
-            cylinder(r = diameter * 0.5, h = length, $fs=diameter/12);
+  fromTo(from=from, to=to, size=[diameter,diameter], align=[-0.5, 0.5]+align, material=material, name="Threaded rod", endExtras=endOffsets, endCaps=endCaps) {
+    rotate([0,90,0]) {
+      cylinder(r=0.5, h=1, $fs=diameter/60 );
+    }
   }
 }
 
