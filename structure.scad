@@ -102,8 +102,8 @@ module Ridge(topCorners, frameBeam, topSupportExtent, baseCorners, baseSupportEx
   bw = beamWidth(frameBeam);
   bh = beamHeigth(frameBeam);
 
-  tb1 = topCorners[0] - [max(0,topSupportExtent), 0, 0];
-  tb2 = topCorners[1] + [max(0,topSupportExtent), 0, 0];
+  tb1 = topCorners[0] - [max(supportRodFasteningClearance,topSupportExtent), 0, 0];
+  tb2 = topCorners[1] + [max(supportRodFasteningClearance,topSupportExtent), 0, 0];
   beam(tb1, tb2, frameBeam, align=[CENTER, BOTTOM]);
 
   rodOffs = rodDiameter;
