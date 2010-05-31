@@ -51,7 +51,6 @@ module bearing(pos=[0,0,0], angle=[0,0,0], model=SkateBearing, material=Steel, s
       }
 
   module Ring(pos, od, id, h, material, holeMaterial) {
-    echo(pos, od, id, h, material);
     color(material) {
       translate(pos)
         difference() {
