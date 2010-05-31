@@ -19,10 +19,9 @@
 
 
 
-module ZCarriageFrame(xSize, zSize, zCarriagePosition, frameBeam, rodDiameter) {
+module ZCarriageFrame(xSize, zSize, zCarriagePosition, frameBeam, rodDiameter, zDriveRodPos1, zDriveRodPos2, rodDistanceFromEdge) {
   part("Z Carriage Frame");
 
-  rodDistanceFromEdge=8*mm + rodDiameter/2;
   movementMargin = 20*mm;
   slideHeight = 10*cm;
   
@@ -41,10 +40,10 @@ module ZCarriageFrame(xSize, zSize, zCarriagePosition, frameBeam, rodDiameter) {
   // Threaded rods that lift the slide
   trs = threadedRodMargins;
   tre = zSize - beamHeigth(frameBeam) - threadedRodMargins;
-  tr1s = [beamWidth(frameBeam) - rodDistanceFromEdge,0,trs];
-  tr1e = [beamWidth(frameBeam) - rodDistanceFromEdge,0,tre];
-  tr2s = [xSize-beamWidth(frameBeam) + rodDistanceFromEdge,0,trs];
-  tr2e = [xSize-beamWidth(frameBeam) + rodDistanceFromEdge,0,tre];
+  tr1s = zDriveRodPos1 + [0,0,trs]; // [beamWidth(frameBeam) - rodDistanceFromEdge,0,trs];
+  tr1e = zDriveRodPos1 + [0,0,tre]; // [beamWidth(frameBeam) - rodDistanceFromEdge,0,tre];
+  tr2s = zDriveRodPos2 + [0,0,trs]; // [xSize-beamWidth(frameBeam) + rodDistanceFromEdge,0,trs];
+  tr2e = zDriveRodPos2 + [0,0,tre]; // [xSize-beamWidth(frameBeam) + rodDistanceFromEdge,0,tre];
   threadedRod(tr1s, tr1e, diameter=rodDiameter);
   threadedRod(tr2s, tr2e, diameter=rodDiameter);
 
