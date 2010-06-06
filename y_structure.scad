@@ -1,5 +1,5 @@
 /*
- * A design for a repstrap based on wooden beams and threaded rods.
+ * Y axis structure.
  * 
  * Originally by Hans Häggström, 2010.
  * Licenced under Creative Commons Attribution-Share Alike 3.0.
@@ -18,13 +18,14 @@
 
 
 
-module YCarriageFrame(yCarriageSpace=[50*cm,50*cm], yRodOffsets=[90*mm,90*mm], yCarriagePosition=0, frameBeam=Beam45x33, rodDiameter=8*mm, bearingModel=SkateBearing) {
+module YCarriageFrame(yCarriageSpace=[50*cm,50*cm], yRodOffsets=[90*mm,90*mm], yCarriagePosition=0, frameBeam=Beam45x33, rodDiameter=8*mm, bearingModel=SkateBearing, motorBeam=Beam70x10, motorType=Nema23) {
   part("Y Carriage Frame");
 
   rodOffset = 10*mm;
   rodMarginFromEdges=10*mm;
 
-  margin = 1*cm;
+  margin = 4*cm;
+  sideMargin = 0.5*cm;
 
   buildAreaBorder = 3*cm;
 
@@ -49,7 +50,7 @@ module YCarriageFrame(yCarriageSpace=[50*cm,50*cm], yRodOffsets=[90*mm,90*mm], y
 
   echo(str("  --- Build area along Y axis: ", travel, " mm ---"));
 
-  carriageSize = [yCarriageSpace[0]- 2  *margin, travel + 2*buildAreaBorder];
+  carriageSize = [yCarriageSpace[0]- 2  *sideMargin, travel + 2*buildAreaBorder];
 
   bearingCleaing = 2*mm;
   carriageZ = rodDiameter + bearingOuterDiameter(bearingModel) + bearingCleaing;
@@ -59,6 +60,33 @@ module YCarriageFrame(yCarriageSpace=[50*cm,50*cm], yRodOffsets=[90*mm,90*mm], y
   carriagePos = [carriageXOffs, carriageMidY-carriageSize[1]/2, carriageZ];
 
   translate(carriagePos) YCarriageSlide(carriageSize, slideUnderstructureSize, frameBeam,  rod1X-carriageXOffs, rod2X-carriageXOffs, rodMarginFromEdges, rodDiameter,bearingModel, bearingCleaing);
+  
+  // Motor
+  idlerEdgeDistance = beamWidth(frameBeam) + 20*mm;
+  motorPos = [-beamWidth(motorBeam)/2, yCarriageSpace[1]-idlerEdgeDistance-2*cm, beamHeigth(motorBeam)];
+  motor(model=motorType, pos=motorPos);
+
+  pulleyPos = motorPos + [0, 0, -beamHeigth(motorBeam)];
+  pulley(pos=pulleyPos, angle=[180,0,0], model=Pulley16x9);
+  
+  // Idlers
+  midIdlerX = yCarriageSpace[0]*0.33;
+  idlerZ = -10*mm;
+  sideIdlerX = motorPos[0] + 2*cm;
+  beltIdler1 = [midIdlerX, idlerEdgeDistance, idlerZ];
+  beltIdler2 = [midIdlerX, yCarriageSpace[1] - idlerEdgeDistance, idlerZ];
+  beltIdler3 = [sideIdlerX, motorPos[1] - 4*cm, idlerZ];
+  beltIdler4 = [midIdlerX - 4*cm, idlerEdgeDistance, idlerZ];
+  bearing(pos=beltIdler1, model=bearingModel);
+  bearing(pos=beltIdler2, model=bearingModel);
+  bearing(pos=beltIdler3, model=bearingModel);
+  bearing(pos=beltIdler4, model=bearingModel);
+  
+  // Belt
+  attachYOffs = carriageSize[1]/2 - slideUnderstructureSize/2 - 2*cm;
+  beltSlideAttachment1 = [midIdlerX, carriageMidY-attachYOffs, idlerZ];
+  beltSlideAttachment2 = [midIdlerX, carriageMidY+attachYOffs, idlerZ];
+  translate([0,0,4*mm]) belt(7, [beltSlideAttachment1, beltIdler1, beltIdler4, beltIdler3, pulleyPos-[0,0,15*mm], beltIdler2, beltSlideAttachment2], model=TimingBelt_XL_025, closed=false);
 }
 
 
@@ -73,10 +101,10 @@ module YCarriageSlide(surfaceSize, slideUnderstructureSize, frameBeam,  rod1X, r
 
   bearD = bearingOuterDiameter(bearingModel);
   
-  bearingX = rod1X - bearingWidth(bearingModel)/2;
+  bearingX = rod2X - bearingWidth(bearingModel)/2;
   bearingZ = -bearD/2 - bearingCleaing;
-  startX = rod1X + bearingWidth(bearingModel)/2 + 5*mm;
-  endX = rod2X + 2*rodMarginFromEdges + rodDiameter / 2;
+  startX = rod1X - (2*rodMarginFromEdges + rodDiameter / 2);
+  endX = rod2X - (bearingWidth(bearingModel)/2 + 5*mm);
 
   y1 = midY - slideUnderstructureSize/2;
   y2 = midY + slideUnderstructureSize/2;
