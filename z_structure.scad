@@ -22,7 +22,7 @@
 module ZCarriageFrame(xSize, zSize, zCarriagePosition, xCarriagePosition, frameBeam, rodDiameter, zDriveRodPos1, zDriveRodPos2, rodDistanceFromEdge, stepperType) {
   part("Z Carriage Frame");
 
-  bottomMovementMargin = 10*mm;
+  bottomMovementMargin = 20*mm;
   topMovementMargin = 20*mm;
   slideHeight = 10*cm;
   

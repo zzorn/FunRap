@@ -64,18 +64,17 @@ module XCarriageFrame(xSize, xPos = 0.3, frameBeam, rodDistanceFromEdge, motorBe
   rod([rodX1,  rodSep, rodZ], [rodX2,  rodSep, rodZ], diameter=rodDiameter);
 
   // Motor
-  idlerReserve = 2*bearRadius;
   mbh = beamHeigth(frameBeam) + baseZ;
-  mbx1 = -motorWidth(stepperType) - margin - idlerReserve;
-  mbx2 = w;
-  motorX = mbx1 + margin + idlerReserve + motorWidth(stepperType) / 2;
+  mbx1 = 0;
+  mbx2 = w + motorWidth(stepperType);
+  motorX = mbx2 - motorWidth(stepperType) / 2;
   beam([mbx1,0,mbh], [mbx2,0,mbh], motorBeam);
   motorPos = [motorX, 0, mbh];
   motor(stepperType, pos=motorPos, orientation=[180,0,0]);
 
   // Idlers for cable
   cableZ = mbh+beamHeigth(motorBeam) + 12 * mm;
-  motorIdlerX1 = mbx1 + bearRadius + margin/2;
+  motorIdlerX1 = w / 2;
   motorIdlerX2 = x2 - w + margin;
   motorIdlerY = xRodSeparation / 2 - bearRadius - margin/2;
   motorIdler1 = [motorIdlerX1,   motorIdlerY, cableZ];
@@ -93,10 +92,10 @@ module XCarriageFrame(xSize, xPos = 0.3, frameBeam, rodDistanceFromEdge, motorBe
   pulley(pos=pulleyPos, model=pulleyModel);
 
   // Moving x carriage
-  movementMargin1 = 1*cm + beamWidth(frameBeam);
-  movementMargin2 = 1*cm + beamWidth(frameBeam);
+  movementMargin1 = 5*mm;
+  movementMargin2 = 8.6*mm + beamWidth(frameBeam);
   carriageLength = 9.5*cm;
-  movementInterval = [movementMargin1, xSize - carriageLength - movementMargin2];
+  movementInterval = [mbx2 + movementMargin1, xSize - carriageLength - movementMargin2];
   travel = movementInterval[1] - movementInterval[0];
   carriageX = movementInterval[0] + xPos * travel;
   echo(str("  --- Build area along X axis: ", travel, " mm ---"));

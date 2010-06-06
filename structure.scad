@@ -95,7 +95,7 @@ module MotorBoard(length, beamType, frameBeam, motorType, zRod1, zRod2) {
 
   beam([0,0,0], [0,length,0], beamType, align=[CENTER, TOP]);
 
-  pos1 = [0, beamWidth(frameBeam) + 6*cm, beamHeigth(beamType)];
+  pos1 = [0, length - beamWidth(frameBeam) - 4*cm, beamHeigth(beamType)];
   motor(model=motorType, pos=pos1);
 
   p1 = pos1 + [0, 0, -beamHeigth(beamType)];
@@ -111,8 +111,8 @@ module MotorBoard(length, beamType, frameBeam, motorType, zRod1, zRod2) {
   midY = length / 2;
 
   zBeltDrivePos = p1 + [0, 0, beltZ1];
-  zBeltTensionerPos = [15*mm, midY - 30*mm, beltZ2];
-  zBeltIdlerPos = [-20*mm, midY - 20*mm, beltZ2];
+  zBeltTensionerPos = [15*mm, midY + 30*mm, beltZ2];
+  zBeltIdlerPos = [-20*mm, midY + 20*mm, beltZ2];
   zDrivePos1 = [zRod1[0], zRod1[1], beltZ2];
   zDrivePos2 = [zRod2[0], zRod2[1], beltZ2];
 

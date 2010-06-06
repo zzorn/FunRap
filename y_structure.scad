@@ -27,7 +27,7 @@ module YCarriageFrame(yCarriageSpace=[50*cm,50*cm], yRodOffsets=[90*mm,90*mm], y
   margin = 4*cm;
   sideMargin = 0.5*cm;
 
-  buildAreaBorder = 3*cm;
+  buildAreaBorder = 6*cm;
 
   slideUnderstructureSize = 15*cm;
 
@@ -63,7 +63,7 @@ module YCarriageFrame(yCarriageSpace=[50*cm,50*cm], yRodOffsets=[90*mm,90*mm], y
   
   // Motor
   idlerEdgeDistance = beamWidth(frameBeam) + 20*mm;
-  motorPos = [-beamWidth(motorBeam)/2, yCarriageSpace[1]-idlerEdgeDistance-2*cm, beamHeigth(motorBeam)];
+  motorPos = [-beamWidth(motorBeam)/2, idlerEdgeDistance+2*cm, beamHeigth(motorBeam)];
   motor(model=motorType, pos=motorPos);
 
   pulleyPos = motorPos + [0, 0, -beamHeigth(motorBeam)];
@@ -73,10 +73,10 @@ module YCarriageFrame(yCarriageSpace=[50*cm,50*cm], yRodOffsets=[90*mm,90*mm], y
   midIdlerX = yCarriageSpace[0]*0.33;
   idlerZ = -10*mm;
   sideIdlerX = motorPos[0] + 2*cm;
-  beltIdler1 = [midIdlerX, idlerEdgeDistance, idlerZ];
-  beltIdler2 = [midIdlerX, yCarriageSpace[1] - idlerEdgeDistance, idlerZ];
-  beltIdler3 = [sideIdlerX, motorPos[1] - 4*cm, idlerZ];
-  beltIdler4 = [midIdlerX - 4*cm, idlerEdgeDistance, idlerZ];
+  beltIdler1 = [midIdlerX, yCarriageSpace[1] - idlerEdgeDistance, idlerZ];
+  beltIdler2 = [midIdlerX, idlerEdgeDistance, idlerZ];
+  beltIdler3 = [sideIdlerX, motorPos[1] + 4*cm, idlerZ];
+  beltIdler4 = [midIdlerX - 4*cm, yCarriageSpace[1] - idlerEdgeDistance, idlerZ];
   bearing(pos=beltIdler1, model=bearingModel);
   bearing(pos=beltIdler2, model=bearingModel);
   bearing(pos=beltIdler3, model=bearingModel);
@@ -86,7 +86,7 @@ module YCarriageFrame(yCarriageSpace=[50*cm,50*cm], yRodOffsets=[90*mm,90*mm], y
   attachYOffs = carriageSize[1]/2 - slideUnderstructureSize/2 - 2*cm;
   beltSlideAttachment1 = [midIdlerX, carriageMidY-attachYOffs, idlerZ];
   beltSlideAttachment2 = [midIdlerX, carriageMidY+attachYOffs, idlerZ];
-  translate([0,0,4*mm]) belt(7, [beltSlideAttachment1, beltIdler1, beltIdler4, beltIdler3, pulleyPos-[0,0,15*mm], beltIdler2, beltSlideAttachment2], model=TimingBelt_XL_025, closed=false);
+  translate([0,0,4*mm]) belt(7, [beltSlideAttachment2, beltIdler1, beltIdler4, beltIdler3, pulleyPos-[0,0,15*mm], beltIdler2, beltSlideAttachment1], model=TimingBelt_XL_025, closed=false);
 }
 
 
