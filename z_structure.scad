@@ -1,5 +1,5 @@
 /*
- * A design for a repstrap based on wooden beams and threaded rods.
+ * Z axis structure.
  * 
  * Originally by Hans Häggström, 2010.
  * Licenced under Creative Commons Attribution-Share Alike 3.0.
@@ -19,10 +19,11 @@
 
 
 
-module ZCarriageFrame(xSize, zSize, zCarriagePosition, frameBeam, rodDiameter, zDriveRodPos1, zDriveRodPos2, rodDistanceFromEdge) {
+module ZCarriageFrame(xSize, zSize, zCarriagePosition, xCarriagePosition, frameBeam, rodDiameter, zDriveRodPos1, zDriveRodPos2, rodDistanceFromEdge, stepperType) {
   part("Z Carriage Frame");
 
-  movementMargin = 20*mm;
+  bottomMovementMargin = 20*mm;
+  topMovementMargin = 20*mm;
   slideHeight = 10*cm;
   
   threadedRodMargins = 10*mm;
@@ -48,9 +49,8 @@ module ZCarriageFrame(xSize, zSize, zCarriagePosition, frameBeam, rodDiameter, z
   threadedRod(tr2s, tr2e, diameter=rodDiameter);
 
 
-
-  carriageMovement = [2*beamHeigth(frameBeam) + movementMargin, 
-              zSize - beamHeigth(frameBeam) - movementMargin - slideHeight];
+  carriageMovement = [2*beamHeigth(frameBeam) + bottomMovementMargin, 
+              zSize - beamHeigth(frameBeam) - topMovementMargin - slideHeight];
 
   travel = carriageMovement[1]-carriageMovement[0];
 
@@ -58,7 +58,7 @@ module ZCarriageFrame(xSize, zSize, zCarriagePosition, frameBeam, rodDiameter, z
 
   carriagePos = [0,0,zCarriagePosition * travel + carriageMovement[0]];
 
-  translate(carriagePos) XCarriageFrame(xSize, frameBeam, rodDistanceFromEdge);
+  translate(carriagePos) XCarriageFrame(xSize, xCarriagePosition, frameBeam, rodDistanceFromEdge, stepperType=stepperType);
 }
 
 

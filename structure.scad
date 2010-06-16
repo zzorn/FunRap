@@ -22,6 +22,7 @@
 module FunRap(xSize=50*cm, ySize=52*cm, zSize=42*cm, frameBeam=Beam45x33, motorBeam=Beam70x10, motorType=Nema23, topSupportSpread=-0.3) {
 
   time = $t;  // Animated, set to 0..1
+  xCarriagePosition = time;
   yCarriagePosition = time;
   zCarriagePosition = time;
 
@@ -44,7 +45,6 @@ module FunRap(xSize=50*cm, ySize=52*cm, zSize=42*cm, frameBeam=Beam45x33, motorB
                [xSize, midY, zSize] ];
 
   motorBoardOffset = [ beamWidth(motorBeam)/2, 0, beamHeigth(frameBeam)];
-  motorPositions=[ySize*1/6, ySize*2/3];
 
   yCarriageOffset = motorBoardOffset + [beamWidth(motorBeam)/2,0,0];
   yCarriageSpace = [xSize - 2*beamWidth(motorBeam), ySize];
@@ -65,13 +65,13 @@ module FunRap(xSize=50*cm, ySize=52*cm, zSize=42*cm, frameBeam=Beam45x33, motorB
     Base(baseCorners, frameBeam, motorBeam, baseSupportExtent, yRodOffsets);
   
     // Motors
-    translate(motorBoardOffset) MotorBoard(ySize, motorBeam, motorType, motorPositions, zDriveRodPos1-motorBoardOffset, zDriveRodPos2-motorBoardOffset);
+    translate(motorBoardOffset) MotorBoard(ySize, motorBeam, frameBeam, motorType, zDriveRodPos1-motorBoardOffset, zDriveRodPos2-motorBoardOffset);
 
     // Y carriage
-    translate(yCarriageOffset) YCarriageFrame(yCarriageSpace, yRodOffsets, yCarriagePosition, frameBeam, rodDiameter);
+    translate(yCarriageOffset) YCarriageFrame(yCarriageSpace, yRodOffsets, yCarriagePosition, frameBeam, rodDiameter, SkateBearing, motorBeam, motorType);
 
     // Z carriage
-    translate(zCarriageOffset) ZCarriageFrame(xSize, zSize, zCarriagePosition, frameBeam, rodDiameter, zDriveRodPos1-zCarriageOffset, zDriveRodPos2-zCarriageOffset, rodDistanceFromEdge);
+    translate(zCarriageOffset) ZCarriageFrame(xSize, zSize, zCarriagePosition, xCarriagePosition, frameBeam, rodDiameter, zDriveRodPos1-zCarriageOffset, zDriveRodPos2-zCarriageOffset, rodDistanceFromEdge, motorType);
 
     // Top
     Ridge(topCorners, frameBeam, motorBeam, topSupportExtent, baseCorners, baseSupportExtent, supportRodClearing, supportRodFasteningClearance,rodDiameter);
@@ -91,21 +91,17 @@ module Base(corners, frameBeam, thinFrameBeam, support, yRodOffsets) {
 }
 
 
-module MotorBoard(length, beamType, motorType, motorPositions, zRod1, zRod2) {
+module MotorBoard(length, beamType, frameBeam, motorType, zRod1, zRod2) {
   part("Motor board");
 
 //  beam([0,0,0], [0,length,0], beamType, align=[CENTER, TOP]);
 
-  pos1 = [0, motorPositions[0], beamHeigth(beamType)];
-  pos2 = [0, motorPositions[1], beamHeigth(beamType)];
+  pos1 = [0, length - beamWidth(frameBeam) - 4*cm, beamHeigth(beamType)];
   motor(model=motorType, pos=pos1);
-  motor(model=motorType, pos=pos2);
 
   p1 = pos1 + [0, 0, -beamHeigth(beamType)];
-  p2 = pos2 + [0, 0, -beamHeigth(beamType)];
 
   pulley(pos=p1, angle=[180,0,0], model=Pulley16x9);
-  pulley(pos=p2, angle=[180,0,0], model=Pulley16x9);  
 
   pulley(pos=[zRod1[0], zRod1[1], -10*mm], angle=[180,0,0], model=Pulley24x9);
   pulley(pos=[zRod2[0], zRod2[1], -10*mm], angle=[180,0,0], model=Pulley24x9);
@@ -116,8 +112,8 @@ module MotorBoard(length, beamType, motorType, motorPositions, zRod1, zRod2) {
   midY = length / 2;
 
   zBeltDrivePos = p1 + [0, 0, beltZ1];
-  zBeltTensionerPos = [15*mm, midY - 30*mm, beltZ2];
-  zBeltIdlerPos = [-20*mm, midY - 20*mm, beltZ2];
+  zBeltTensionerPos = [15*mm, midY + 30*mm, beltZ2];
+  zBeltIdlerPos = [-20*mm, midY + 20*mm, beltZ2];
   zDrivePos1 = [zRod1[0], zRod1[1], beltZ2];
   zDrivePos2 = [zRod2[0], zRod2[1], beltZ2];
 

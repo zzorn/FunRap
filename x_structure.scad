@@ -17,7 +17,7 @@
 // XCarriageFrame(50*cm, Beam45x33);
 
 
-module XCarriageFrame(xSize, frameBeam, rodDistanceFromEdge, motorBeam=Beam70x10, stepperType=Nema23, rodDiameter = 8*mm, bearingModel=SkateBearing) {
+module XCarriageFrame(xSize, xPos = 0.3, frameBeam, rodDistanceFromEdge, motorBeam=Beam70x10, stepperType=Nema23, rodDiameter = 8*mm, bearingModel=SkateBearing) {
   part("X Carriage Frame");
 
 
@@ -64,27 +64,50 @@ module XCarriageFrame(xSize, frameBeam, rodDistanceFromEdge, motorBeam=Beam70x10
   rod([rodX1,  rodSep, rodZ], [rodX2,  rodSep, rodZ], diameter=rodDiameter);
 
   // Motor
-  idlerReserve = 2*bearRadius;
   mbh = beamHeigth(frameBeam) + baseZ;
-  mbx1 = -motorWidth(stepperType) - margin - idlerReserve;
-  mbx2 = w;
-  motorX = mbx1 + margin + idlerReserve + motorWidth(stepperType) / 2;
+  mbx1 = 0;
+  mbx2 = w + motorWidth(stepperType);
+  motorX = mbx2 - motorWidth(stepperType) / 2;
   beam([mbx1,0,mbh], [mbx2,0,mbh], motorBeam);
-  motor(stepperType, pos=[motorX, 0, mbh], orientation=[180,0,0], dualAxis=true);
+  motorPos = [motorX, 0, mbh];
+  motor(stepperType, pos=motorPos, orientation=[180,0,0]);
 
   // Idlers for cable
-  cableZ = mbh+beamHeigth(motorBeam) + 10 * mm;
-  motorIdlerX1 = mbx1 + bearRadius + margin/2;
+  cableZ = mbh+beamHeigth(motorBeam) + 12 * mm;
+  motorIdlerX1 = w / 2;
   motorIdlerX2 = x2 - w + margin;
   motorIdlerY = xRodSeparation / 2 - bearRadius - margin/2;
-  bearing(pos=[motorIdlerX1,  motorIdlerY, cableZ], model=bearingModel);
-  bearing(pos=[motorIdlerX1, -motorIdlerY, cableZ], model=bearingModel);
-  bearing(pos=[motorIdlerX2,  motorIdlerY, cableZ], model=bearingModel);
-  bearing(pos=[motorIdlerX2, -motorIdlerY, cableZ], model=bearingModel);
+  motorIdler1 = [motorIdlerX1,   motorIdlerY, cableZ];
+  motorIdler2 = [motorIdlerX1,  -motorIdlerY, cableZ];
+  motorIdler3 = [motorIdlerX2,   motorIdlerY, cableZ];
+  motorIdler4 = [motorIdlerX2,  -motorIdlerY, cableZ];
+  bearing(pos=motorIdler1, model=bearingModel);
+  bearing(pos=motorIdler2, model=bearingModel);
+  bearing(pos=motorIdler3, model=bearingModel);
+  bearing(pos=motorIdler4, model=bearingModel);
+
+  // Pulley
+  pulleyModel = Pulley16x9;
+  pulleyPos =motorPos+[0,0,beamHeigth(motorBeam) + 1*mm]; 
+  pulley(pos=pulleyPos, model=pulleyModel);
 
   // Moving x carriage
-  carriageX = 10*cm; // TODO
-  translate([carriageX, 0, mbh+rodDiameter/2]) XCarriageSlide(motorBeam, frameBeam, xRodSeparation, rodDiameter, rodDistanceFromEdge, bearingModel);
+  movementMargin1 = 5*mm;
+  movementMargin2 = 8.6*mm + beamWidth(frameBeam);
+  carriageLength = 9.5*cm;
+  movementInterval = [mbx2 + movementMargin1, xSize - carriageLength - movementMargin2];
+  travel = movementInterval[1] - movementInterval[0];
+  carriageX = movementInterval[0] + xPos * travel;
+  echo(str("  --- Build area along X axis: ", travel, " mm ---"));
+  translate([carriageX, 0, mbh+rodDiameter/2]) XCarriageSlide(motorBeam, frameBeam, xRodSeparation, rodDiameter, rodDistanceFromEdge, bearingModel, carriageLength);
+
+  // Belt
+  cz = [0,0,4*mm];
+  beltDrivePos = [pulleyPos[0], pulleyPos[1], cableZ]+cz;
+  carriageBeltConnect1 = [carriageX+20*mm, motorIdlerY+3*mm, cableZ] + cz;
+  carriageBeltConnect2 = [carriageX+carriageLength-20*mm, motorIdlerY+3*mm, cableZ] + cz;
+
+  belt(7, [carriageBeltConnect1, motorIdler1+cz, beltDrivePos, motorIdler2+cz, motorIdler4+cz, motorIdler3+cz, carriageBeltConnect2], model=TimingBelt_XL_025, closed=false);
 
 }
 
@@ -99,8 +122,6 @@ module XCarriageSlide(flatBeam, squareBeam, rodDistance, rodDiam, rodMargin, bea
   base = -beamWidth(squareBeam)+ rodDiam/2+rodMargin;
   top = base + beamWidth(squareBeam);
 
-  beltAttachmentSize = 1*cm;
-  
   // Top
   //beam([0,0,top], [carriageLength, 0,top], flatBeam);
   
@@ -115,13 +136,13 @@ module XCarriageSlide(flatBeam, squareBeam, rodDistance, rodDiam, rodMargin, bea
   // Side
   sideY = y2 + beamHeigth(flatBeam);
   sideBottom = base - (beamWidth(flatBeam) - beamWidth(squareBeam)) / 2;
-  sideX1 = -bearingDiam -margin;
+  sideX1 = 0;
   sideX2 = carriageLength;
-  beam([sideX1-beltAttachmentSize,sideY,sideBottom], [sideX2, sideY,sideBottom], flatBeam, rotation=90, align=[LEFT,TOP]);
+  beam([sideX1,sideY,sideBottom], [sideX2, sideY,sideBottom], flatBeam, rotation=90, align=[LEFT,TOP]);
   
   // Side bearings
-  bearX1 = sideX1 + bearingDiam/2;
-  bearX2 = sideX2 - bearingDiam/2 - beamHeigth(squareBeam) - margin;
+  bearX1 = beamHeigth(squareBeam)/2;
+  bearX2 = carriageLength -beamHeigth(squareBeam)/2;
   bearY = rodDistance / 2+bearingWidth/2;
   bearZ1 = rodDiam/2+bearingDiam/2;
   bearZ2 = -bearZ1;
