@@ -19,7 +19,7 @@
 // Uncomment to test:
 // FunRap();
 
-module FunRap(xSize=50*cm, ySize=52*cm, zSize=42*cm, frameBeam=Beam45x33, motorBeam=[70,10], motorType=Nema23, topSupportSpread=-0.3) {
+module FunRap(xSize=50*cm, ySize=52*cm, zSize=42*cm, frameBeam=Beam45x33, motorBeam=Beam70x10, motorType=Nema23, topSupportSpread=-0.3) {
 
   time = $t;  // Animated, set to 0..1
   yCarriagePosition = time;
@@ -43,11 +43,11 @@ module FunRap(xSize=50*cm, ySize=52*cm, zSize=42*cm, frameBeam=Beam45x33, motorB
   topCorners=[ [0, midY, zSize],
                [xSize, midY, zSize] ];
 
-  motorBoardOffset = [beamWidth(frameBeam) + beamWidth(motorBeam)/2, 0, beamHeigth(frameBeam)];
+  motorBoardOffset = [ beamWidth(motorBeam)/2, 0, beamHeigth(frameBeam)];
   motorPositions=[ySize*1/6, ySize*2/3];
 
   yCarriageOffset = motorBoardOffset + [beamWidth(motorBeam)/2,0,0];
-  yCarriageSpace = [xSize - 2*beamWidth(frameBeam) - beamWidth(motorBeam), ySize];
+  yCarriageSpace = [xSize - 2*beamWidth(motorBeam), ySize];
   yRodOffsets=[2*beamWidth(frameBeam), 2*beamWidth(frameBeam)];
 
   zCarriageOffset = [0,midY,0];
@@ -62,7 +62,7 @@ module FunRap(xSize=50*cm, ySize=52*cm, zSize=42*cm, frameBeam=Beam45x33, motorB
   translate(-baseCenter) 
   {
     // Base
-    Base(baseCorners, frameBeam, baseSupportExtent, yRodOffsets);
+    Base(baseCorners, frameBeam, motorBeam, baseSupportExtent, yRodOffsets);
   
     // Motors
     translate(motorBoardOffset) MotorBoard(ySize, motorBeam, motorType, motorPositions, zDriveRodPos1-motorBoardOffset, zDriveRodPos2-motorBoardOffset);
@@ -74,26 +74,27 @@ module FunRap(xSize=50*cm, ySize=52*cm, zSize=42*cm, frameBeam=Beam45x33, motorB
     translate(zCarriageOffset) ZCarriageFrame(xSize, zSize, zCarriagePosition, frameBeam, rodDiameter, zDriveRodPos1-zCarriageOffset, zDriveRodPos2-zCarriageOffset, rodDistanceFromEdge);
 
     // Top
-    Ridge(topCorners, frameBeam, topSupportExtent, baseCorners, baseSupportExtent, supportRodClearing, supportRodFasteningClearance,rodDiameter);
+    Ridge(topCorners, frameBeam, motorBeam, topSupportExtent, baseCorners, baseSupportExtent, supportRodClearing, supportRodFasteningClearance,rodDiameter);
   }
 }
 
 
-module Base(corners, frameBeam, support, yRodOffsets) {
+module Base(corners, frameBeam, thinFrameBeam, support, yRodOffsets) {
   part("Base");
 
   offs=[support, support];
+  zOffs = [0,0,beamHeigth(frameBeam)];
   beam(corners[0], corners[1], frameBeam, align=[LEFT, TOP]);
-  beam(corners[1], corners[2], frameBeam, align=[LEFT, TOP*3], endOffsets=offs);
+  beam(corners[1]+zOffs, corners[2]+zOffs, thinFrameBeam, align=[LEFT, TOP], endOffsets=offs);
   beam(corners[2], corners[3], frameBeam, align=[LEFT, TOP]);
-  beam(corners[3], corners[0], frameBeam, align=[LEFT, TOP*3], endOffsets=offs);
+  beam(corners[3]+zOffs, corners[0]+zOffs, thinFrameBeam, align=[LEFT, TOP], endOffsets=offs);
 }
 
 
 module MotorBoard(length, beamType, motorType, motorPositions, zRod1, zRod2) {
   part("Motor board");
 
-  beam([0,0,0], [0,length,0], beamType, align=[CENTER, TOP]);
+//  beam([0,0,0], [0,length,0], beamType, align=[CENTER, TOP]);
 
   pos1 = [0, motorPositions[0], beamHeigth(beamType)];
   pos2 = [0, motorPositions[1], beamHeigth(beamType)];
@@ -129,11 +130,12 @@ module MotorBoard(length, beamType, motorType, motorPositions, zRod1, zRod2) {
 }
 
 
-module Ridge(topCorners, frameBeam, topSupportExtent, baseCorners, baseSupportExtent, supportRodClearing, supportRodFasteningClearance, rodDiameter) {
+module Ridge(topCorners, frameBeam, flatBeam, topSupportExtent, baseCorners, baseSupportExtent, supportRodClearing, supportRodFasteningClearance, rodDiameter) {
   part("Ridge");
 
   bw = beamWidth(frameBeam);
   bh = beamHeigth(frameBeam);
+  fbh = beamHeigth(flatBeam);
 
   tb1 = topCorners[0] - [max(supportRodFasteningClearance,topSupportExtent), 0, 0];
   tb2 = topCorners[1] + [max(supportRodFasteningClearance,topSupportExtent), 0, 0];
@@ -142,7 +144,7 @@ module Ridge(topCorners, frameBeam, topSupportExtent, baseCorners, baseSupportEx
   rodOffs = rodDiameter;
 
   baseWidthOffs = [bw/2, 0, 0];
-  baseHeightOffs = [0, 0, bh*2 + rodOffs];
+  baseHeightOffs = [0, 0, bh + fbh + rodOffs];
   baseSupportOffs = [0, baseSupportExtent + rodOffs, 0];
 
   topSupportOffs = [topSupportExtent, 0, 0];
