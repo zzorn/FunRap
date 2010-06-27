@@ -22,7 +22,7 @@ module YCarriageFrame(yCarriageSpace=[50*cm,50*cm], yRodOffsets=[90*mm,90*mm], y
   part("Y Carriage Frame");
 
   rodOffset = 10*mm;
-  rodMarginFromEdges=10*mm;
+  rodMarginFromEdges=12.5*mm;
 
   margin = 4*cm;
   sideMargin = 0.5*cm;

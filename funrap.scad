@@ -16,7 +16,7 @@
 
 // Size
 machineWidth = 50.5*cm;
-machineDepth = 52*cm;
+machineDepth = 52.5*cm;
 machineHeight = 43.9*cm;
 
 // Size of wooden beams used
