@@ -64,17 +64,18 @@ module XCarriageFrame(xSize, xPos = 0.3, frameBeam, rodDistanceFromEdge, motorBe
   rod([rodX1,  rodSep, rodZ], [rodX2,  rodSep, rodZ], diameter=rodDiameter);
 
   // Motor
+  idlerSpace = bearRadius * 2;
   mbh = beamHeigth(frameBeam) + baseZ;
-  mbx1 = 0;
-  mbx2 = w + motorWidth(stepperType);
-  motorX = mbx2 - motorWidth(stepperType) / 2;
+  mbx1 = 0 - motorWidth(stepperType) - idlerSpace;
+  mbx2 = w;
+  motorX = - motorWidth(stepperType) / 2;
   beam([mbx1,0,mbh], [mbx2,0,mbh], motorBeam);
   motorPos = [motorX, 0, mbh];
   motor(stepperType, pos=motorPos, orientation=[180,0,0]);
 
   // Idlers for cable
   cableZ = mbh+beamHeigth(motorBeam) + 12 * mm;
-  motorIdlerX1 = w / 2;
+  motorIdlerX1 = mbx1 + idlerSpace / 2;
   motorIdlerX2 = x2 - w + margin;
   motorIdlerY = xRodSeparation / 2 - bearRadius - margin/2;
   motorIdler1 = [motorIdlerX1,   motorIdlerY, cableZ];
