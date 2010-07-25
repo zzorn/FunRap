@@ -44,6 +44,8 @@ Feel free to copy OpenSCAD files for reuse elsewhere, there is for example a par
 
 The files are licenced under Creative Commons Attribution-Share Alike 3.0., but feel free to ask if you need them under some other license.
 
+By request they are now also dual licensed under LGPL 2 or later, you can use them under either of the licenses or dual licensed.
+
 
 == Contact ==
 
