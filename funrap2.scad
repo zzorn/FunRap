@@ -14,6 +14,7 @@ include <box.scad>
 include <board.scad>
 include <rod.scad>
 include <stepper.scad>
+include <beam.scad>
 
 
 // Size
@@ -24,15 +25,23 @@ baseThickness = 20*mm;
 sideThickness = 10*mm;
 rodDiam = 8*mm;
 
-// Size of wooden beams used
-frameBeam = [45*mm, 33*mm];
-motorPlatformBeam = [70*mm, 10*mm];
+frameBeam = [30*mm, 30*mm];
 
 // Stepper motor
 stepperMotorModel = Nema23;
  
+// Box 
 box([width, depth, height], bottomThickness=baseThickness, sideThickness=sideThickness, topThickness=0,material=Birch);
 
+// Beam Frame 
+st = sideThickness;
+bt = baseThickness;
+beam([st,st,bt], [st,st,height], type=frameBeam, align=[BOTTOM, LEFT]);
+beam([width-st,st,bt], [width-st,st,height], type=frameBeam, align=[BOTTOM, RIGHT]);
+beam([st,depth-st,bt], [st,depth-st,height], type=frameBeam, align=[TOP, LEFT]);
+beam([width-st,depth-st,bt], [width-st,depth-st,height], type=frameBeam, align=[TOP, RIGHT]);
+
+// Rods
 r11 = [2.5*cm, 0, height-2.5*cm];
 r12 = [2.5*cm, depth, height-2.5*cm];
 r21 = [width - 2.5*cm, 0, height-2.5*cm];
